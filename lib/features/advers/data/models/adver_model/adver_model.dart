@@ -33,17 +33,28 @@ class AdverModel extends AdverEntity{
 class Items {
   int? xAdvertismentIdPk;
   String? xAdvTitle;
+  String?  passedTime;
+  String? location;
   List<Images>? images;
+  List<String>? specsStr;
 
   Items({this.xAdvertismentIdPk, this.xAdvTitle, this.images});
 
   Items.fromJson(Map<String, dynamic> json) {
     xAdvertismentIdPk = json['xAdvertismentIdPk'];
     xAdvTitle = json['xAdvTitle'];
+    passedTime = json['passedTime'];
+    location = json['location'];
     if (json['images'] != null) {
       images = <Images>[];
       json['images'].forEach((v) {
         images!.add(new Images.fromJson(v));
+      });
+    }
+       if (json['specsStr'] != null) {
+      specsStr = <String>[];
+      json['specsStr'].forEach((v) {
+        specsStr!.add(v);
       });
     }
   }

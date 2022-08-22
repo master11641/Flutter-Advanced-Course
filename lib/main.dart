@@ -9,52 +9,65 @@ import 'package:flutter_advanced_course/features/category/data/data_source/remot
 import 'package:flutter_advanced_course/features/category/data/repository/category_repositoryImpl.dart';
 import 'package:flutter_advanced_course/features/category/domain/use_cases/get_categories_usecase.dart';
 import 'package:flutter_advanced_course/features/category/presentation/bloc/bloc/category_bloc.dart';
-import 'package:flutter_advanced_course/features/feature_weather/data/data_source/remote/api_provider.dart';
-import 'package:flutter_advanced_course/features/feature_weather/data/repository/weather_repositoryImpl.dart';
-import 'package:flutter_advanced_course/features/feature_weather/domain/use_cases/get_current_weather_usecase.dart';
-import 'package:flutter_advanced_course/features/feature_weather/presentation/bloc/home_bloc.dart';
+import 'package:flutter_advanced_course/features/theme/data/data_source/local/theme_provider.dart';
+import 'package:flutter_advanced_course/features/theme/data/repository/theme_repositoryImpl.dart';
+import 'package:flutter_advanced_course/features/theme/domain/use_cases/get_theme_usecase.dart';
+import 'package:flutter_advanced_course/features/theme/presentation/bloc/theme_bloc.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AdverBloc(
+              GetAdversUseCase(AdverRepositoryImpl(AdverApiProvider()))),
+        ),
+        BlocProvider(
+          create: (context) => CategoryBloc(GetCategorysUseCase(
+              CategoryRepositoryImpl(CategoryApiProvider()))),
+        ),
+        BlocProvider(
+            create: (context) => ThemeBloc(
+                GetThemeUseCase(ThemeRepositoryImpl(ThemeProvider()))))
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // GetCurrentWeatherUseCase getCurrentWeatherUseCase =
-    //     GetCurrentWeatherUseCase(WeatherRepositoryImpl(ApiProvider()));
-    // getCurrentWeatherUseCase.call('tehran');
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: [
-        GlobalCupertinoLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      supportedLocales: [
-        Locale("fa", "IR"),
-        Locale("en", 'US'),
-      ],
-      locale: Locale("fa", "IR"),
-      home: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => AdverBloc(
-                GetAdversUseCase(AdverRepositoryImpl(AdverApiProvider()))),
-          ),
-              BlocProvider(
-            create: (context) => CategoryBloc(
-                GetCategorysUseCase(CategoryRepositoryImpl(CategoryApiProvider()))),
-          ),
-        ],
-        child: AdverView(),
-      ),
+    return BlocConsumer<ThemeBloc, IThemeState>(
+      listener: (context, state) {
+      
+      },
+      builder: (context, state) {
+        return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: const [
+              GlobalCupertinoLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale("fa", "IR"),
+              Locale("en", 'US'),
+            ],
+            locale: const Locale("fa", "IR"),
+            theme: ThemeData(
+              brightness: state.entity.theme!.brightness,
+              primarySwatch: state.entity.theme!.primarySwatch,
+              primaryColor:state.entity.theme!.primaryColor,
+              textTheme: state.entity.theme!.textTheme
+            ),
+            home: AdverView());
+          
+      },
     );
   }
 }

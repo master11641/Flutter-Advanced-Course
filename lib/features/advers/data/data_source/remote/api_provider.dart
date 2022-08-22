@@ -23,4 +23,16 @@ class AdverApiProvider {
     );
     return response;
   }
+  Future<dynamic> getSuggestCategories(int minCharCount,String prefix ) async {
+    var params=  { "minCharCount": minCharCount,"prefix":prefix ?? ''};
+    Response response = await _dio.get(
+      '${Constants.baseUrlAdver}/advers/GetSuggestCategories',
+      options: Options(headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+      }),
+      queryParameters:params ,
+    );
+    return response;
+  }
+
 }
